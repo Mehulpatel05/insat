@@ -3,10 +3,14 @@ from config import BOT_TOKEN
 
 TELEGRAM_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
-def download_video(file_id: str, save_path: str = "video.mp4") -> str:
+def get_file_url(file_id: str) -> str:
     res = requests.get(f"{TELEGRAM_API}/getFile", params={"file_id": file_id}).json()
     file_path = res["result"]["file_path"]
-    video = requests.get(f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file_path}")
+    return f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file_path}"
+
+def download_video(file_id: str, save_path: str = "video.mp4") -> str:
+    url = get_file_url(file_id)
+    video = requests.get(url)
     with open(save_path, "wb") as f:
         f.write(video.content)
     return save_path
